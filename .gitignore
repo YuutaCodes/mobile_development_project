@@ -32,5 +32,4 @@ local.properties
 # Secrets
 *.jks
 *.keystore
-app/google-services.json
 .env
