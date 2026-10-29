@@ -4,6 +4,9 @@ Too Good To Go-clone in Kotlin.
 
 Werkwijze: geen directe pushes naar `main`; werk in een branch en merge via een pull request met groene CI.
 
+## Design
+[Figma](https://www.figma.com/design/xmNthc7z01NzCI87pmkSb0/OddBite-%E2%80%93-app-design?node-id=0-1&p=f&t=3IYimYKgnNxlQCVa-0)
+
 ## Planning
 
 Deadline: **vrijdag 8 januari 2027**. Elke week is er een korte check-in met de docent: wat is af, wat staat gepland voor volgende week.
