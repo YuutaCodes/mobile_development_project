@@ -28,15 +28,15 @@ class RegisterViewModel(private val authRepository: AuthRepository) : ViewModel(
     val uiState: StateFlow<RegisterUiState> = _uiState.asStateFlow()
 
     fun onNameChange(name: String) {
-        _uiState.update { it.copy(name = name, errorMessage = null) }
+        _uiState.update { it.copy(name = name, nameError = null, errorMessage = null) }
     }
 
     fun onEmailChange(email: String) {
-        _uiState.update { it.copy(email = email, errorMessage = null) }
+        _uiState.update { it.copy(email = email, emailError = null, errorMessage = null) }
     }
 
     fun onPasswordChange(password: String) {
-        _uiState.update { it.copy(password = password, errorMessage = null) }
+        _uiState.update { it.copy(password = password, passwordError = null, errorMessage = null) }
     }
 
     fun onRoleChange(role: Role) {
@@ -47,13 +47,28 @@ class RegisterViewModel(private val authRepository: AuthRepository) : ViewModel(
         val state = _uiState.value
         if (state.isLoading) return
 
-        val validationError = validate(state)
-        if (validationError != null) {
-            _uiState.update { it.copy(errorMessage = validationError) }
+        val errors = validate(state)
+        if (errors.hasErrors) {
+            _uiState.update {
+                it.copy(
+                    nameError = errors.name,
+                    emailError = errors.email,
+                    passwordError = errors.password,
+                    errorMessage = null
+                )
+            }
             return
         }
 
-        _uiState.update { it.copy(isLoading = true, errorMessage = null) }
+        _uiState.update {
+            it.copy(
+                isLoading = true,
+                nameError = null,
+                emailError = null,
+                passwordError = null,
+                errorMessage = null
+            )
+        }
         viewModelScope.launch {
             try {
                 authRepository.register(state.name.trim(), state.email.trim(), state.password, state.role)
@@ -61,29 +76,52 @@ class RegisterViewModel(private val authRepository: AuthRepository) : ViewModel(
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                _uiState.update { it.copy(isLoading = false, errorMessage = errorFor(e)) }
+                _uiState.update { it.withError(e) }
             }
         }
     }
 
-    @StringRes
-    private fun validate(state: RegisterUiState): Int? = when {
-        state.name.isBlank() || state.email.isBlank() || state.password.isBlank() ->
-            R.string.register_error_empty_fields
-
-        !Patterns.EMAIL_ADDRESS.matcher(state.email.trim()).matches() ->
-            R.string.register_error_invalid_email
-
-        state.password.length < MIN_PASSWORD_LENGTH -> R.string.register_error_weak_password
-        else -> null
+    private data class FieldErrors(
+        @StringRes val name: Int? = null,
+        @StringRes val email: Int? = null,
+        @StringRes val password: Int? = null
+    ) {
+        val hasErrors: Boolean get() = name != null || email != null || password != null
     }
 
-    private fun errorFor(e: Exception): Int = when (e) {
-        is FirebaseAuthUserCollisionException -> R.string.register_error_email_in_use
-        is FirebaseAuthWeakPasswordException -> R.string.register_error_weak_password
-        is FirebaseAuthInvalidCredentialsException -> R.string.register_error_invalid_email
-        is FirebaseNetworkException -> R.string.register_error_no_internet
-        else -> R.string.register_error_unknown
+    private fun validate(state: RegisterUiState) = FieldErrors(
+        name = if (state.name.isBlank()) R.string.register_error_name_empty else null,
+        email = when {
+            state.email.isBlank() -> R.string.register_error_email_empty
+            !Patterns.EMAIL_ADDRESS.matcher(state.email.trim()).matches() ->
+                R.string.register_error_invalid_email
+
+            else -> null
+        },
+        password = when {
+            state.password.isBlank() -> R.string.register_error_password_empty
+            state.password.length < MIN_PASSWORD_LENGTH -> R.string.register_error_weak_password
+            else -> null
+        }
+    )
+
+    private fun RegisterUiState.withError(e: Exception): RegisterUiState {
+        val stopped = copy(isLoading = false)
+        return when (e) {
+            is FirebaseAuthUserCollisionException ->
+                stopped.copy(emailError = R.string.register_error_email_in_use)
+
+            is FirebaseAuthWeakPasswordException ->
+                stopped.copy(passwordError = R.string.register_error_weak_password)
+
+            is FirebaseAuthInvalidCredentialsException ->
+                stopped.copy(emailError = R.string.register_error_invalid_email)
+
+            is FirebaseNetworkException ->
+                stopped.copy(errorMessage = R.string.register_error_no_internet)
+
+            else -> stopped.copy(errorMessage = R.string.register_error_unknown)
+        }
     }
 
     companion object {

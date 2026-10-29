@@ -9,6 +9,9 @@ data class RegisterUiState(
     val password: String = "",
     val role: Role = Role.CUSTOMER,
     val isLoading: Boolean = false,
+    @param:StringRes val nameError: Int? = null,
+    @param:StringRes val emailError: Int? = null,
+    @param:StringRes val passwordError: Int? = null,
     @param:StringRes val errorMessage: Int? = null,
     val registeredRole: Role? = null
 )

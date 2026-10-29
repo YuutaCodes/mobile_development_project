@@ -28,7 +28,9 @@
     <string name="register_role_merchant_description">I offer bags</string>
     <string name="register_terms">By continuing you agree to the terms of service.</string>
 
-    <string name="register_error_empty_fields">Fill in all fields.</string>
+    <string name="register_error_name_empty">Enter your name.</string>
+    <string name="register_error_email_empty">Enter your email address.</string>
+    <string name="register_error_password_empty">Enter a password.</string>
     <string name="register_error_invalid_email">Enter a valid email address.</string>
     <string name="register_error_weak_password">Your password must be at least 6 characters.</string>
     <string name="register_error_email_in_use">An account with this email already exists.</string>
