@@ -202,7 +202,8 @@ fun LoginScreen(
                 text = stringResource(R.string.login_create_account),
                 onClick = onCreateAccountClick,
                 style = OddBiteButtonStyle.Secondary,
-                enabled = !state.isLoading
+                enabled = !state.isLoading,
+                trailingIcon = R.drawable.ic_arrow_forward
             )
         }
     }
