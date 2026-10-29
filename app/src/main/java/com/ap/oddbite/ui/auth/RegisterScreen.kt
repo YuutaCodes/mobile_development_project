@@ -111,6 +111,10 @@ fun RegisterScreen(
                 enabled = !state.isLoading
             )
 
+            state.errorMessage?.let {
+                Text(text = stringResource(it), color = colors.error)
+            }
+
             Column(
                 verticalArrangement = Arrangement.spacedBy(Variables.space8),
                 modifier = Modifier.padding(top = Variables.space8)
@@ -151,10 +155,6 @@ fun RegisterScreen(
             }
 
             Spacer(modifier = Modifier.weight(1f))
-
-            state.errorMessage?.let {
-                Text(text = stringResource(it), color = colors.error)
-            }
 
             OddBiteButton(
                 text = stringResource(R.string.login_create_account),
