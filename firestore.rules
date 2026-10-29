@@ -1,0 +1,67 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isUser(uid) {
+      return signedIn() && request.auth.uid == uid;
+    }
+
+    function storeOwnerId(storeId) {
+      return get(/databases/$(database)/documents/stores/$(storeId)).data.ownerId;
+    }
+
+    function onlyChanges(keys) {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(keys);
+    }
+
+    function isReservationUpdate() {
+      return signedIn()
+        && onlyChanges(['quantityLeft'])
+        && request.resource.data.quantityLeft >= 0
+        && request.resource.data.quantityLeft <= resource.data.quantityTotal;
+    }
+
+    match /users/{uid} {
+      allow read: if signedIn();
+      allow create: if isUser(uid)
+        && request.resource.data.role in ['customer', 'merchant'];
+      allow update: if isUser(uid)
+        && request.resource.data.role == resource.data.role;
+      allow delete: if false;
+    }
+
+    match /stores/{storeId} {
+      allow read: if signedIn();
+      allow create: if isUser(request.resource.data.ownerId);
+      allow update: if isUser(resource.data.ownerId)
+        && request.resource.data.ownerId == resource.data.ownerId;
+      allow delete: if isUser(resource.data.ownerId);
+    }
+
+    match /bags/{bagId} {
+      allow read: if signedIn();
+      allow create: if isUser(storeOwnerId(request.resource.data.storeId));
+      allow update: if isUser(storeOwnerId(resource.data.storeId))
+        || isReservationUpdate();
+      allow delete: if isUser(storeOwnerId(resource.data.storeId));
+    }
+
+    match /reservations/{reservationId} {
+      allow read: if isUser(resource.data.customerId)
+        || isUser(storeOwnerId(resource.data.storeId));
+      allow create: if isUser(request.resource.data.customerId)
+        && request.resource.data.status == 'reserved';
+      allow update: if (isUser(resource.data.customerId)
+          && onlyChanges(['status'])
+          && request.resource.data.status == 'cancelled')
+        || (isUser(storeOwnerId(resource.data.storeId))
+          && onlyChanges(['status'])
+          && request.resource.data.status == 'collected');
+      allow delete: if false;
+    }
+  }
+}
