@@ -19,4 +19,15 @@ class AuthRepository(private val authRemoteDataSource: AuthRemoteDataSource) {
             throw e
         }
     }
+
+    suspend fun login(email: String, password: String): User {
+        val uid = authRemoteDataSource.login(email, password)
+        val user = authRemoteDataSource.getUser(uid)
+
+        if (user == null) {
+            authRemoteDataSource.logout()
+            throw IllegalStateException("User missing")
+        }
+        return user
+    }
 }

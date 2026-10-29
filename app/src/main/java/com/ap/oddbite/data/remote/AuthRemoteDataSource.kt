@@ -1,5 +1,6 @@
 package com.ap.oddbite.data.remote
 
+import com.ap.oddbite.data.model.Role
 import com.ap.oddbite.data.model.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -28,6 +29,17 @@ class AuthRemoteDataSource(private val auth: FirebaseAuth, private val db: Fireb
     // Deletes whoever is signed in: only call right after register(), when that is the new user
     suspend fun deleteCurrentUser() {
         auth.currentUser?.delete()?.await()
+    }
+
+    // Reads users/{uid}; null if the profile document does not exist or is incomplete
+    suspend fun getUser(uid: String): User? {
+        val doc = db.collection("users").document(uid).get().await()
+        val name = doc.getString("name") ?: return null
+        val email = doc.getString("email") ?: return null
+        val role = doc.getString("role")
+            ?.let { stored -> Role.entries.firstOrNull { it.name.equals(stored, ignoreCase = true) } }
+            ?: return null
+        return User(name, email, role)
     }
 
     // Writes users/{uid}
