@@ -33,4 +33,3 @@ local.properties
 *.jks
 *.keystore
 .env
-/gradle/gradle-daemon-jvm.properties
