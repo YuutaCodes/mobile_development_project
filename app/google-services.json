@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "179630577320",
+    "project_id": "oddbite-2d131",
+    "storage_bucket": "oddbite-2d131.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:179630577320:android:a0ac95a2726bb0d758549d",
+        "android_client_info": {
+          "package_name": "com.ap.oddbite"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBJaE8jaNAROZavYE-wL988dANsyWWSW24"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
