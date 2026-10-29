@@ -82,34 +82,39 @@ fun RegisterScreen(
                     bottom = Variables.space32
                 )
         ) {
-            OddBiteTextField(
-                value = state.name,
-                onValueChange = onNameChange,
-                label = stringResource(R.string.register_name),
-                placeholder = stringResource(R.string.register_name_placeholder),
-                leadingIcon = R.drawable.ic_person,
-                enabled = !state.isLoading
-            )
+            Column {
+                OddBiteTextField(
+                    value = state.name,
+                    onValueChange = onNameChange,
+                    label = stringResource(R.string.register_name),
+                    placeholder = stringResource(R.string.register_name_placeholder),
+                    leadingIcon = R.drawable.ic_person,
+                    enabled = !state.isLoading,
+                    errorMessage = state.nameError?.let { stringResource(it) }
+                )
 
-            OddBiteTextField(
-                value = state.email,
-                onValueChange = onEmailChange,
-                label = stringResource(R.string.login_email),
-                placeholder = stringResource(R.string.login_email_placeholder),
-                leadingIcon = R.drawable.ic_mail,
-                keyboardType = KeyboardType.Email,
-                enabled = !state.isLoading
-            )
+                OddBiteTextField(
+                    value = state.email,
+                    onValueChange = onEmailChange,
+                    label = stringResource(R.string.login_email),
+                    placeholder = stringResource(R.string.login_email_placeholder),
+                    leadingIcon = R.drawable.ic_mail,
+                    keyboardType = KeyboardType.Email,
+                    enabled = !state.isLoading,
+                    errorMessage = state.emailError?.let { stringResource(it) }
+                )
 
-            OddBiteTextField(
-                value = state.password,
-                onValueChange = onPasswordChange,
-                label = stringResource(R.string.login_password),
-                leadingIcon = R.drawable.ic_lock,
-                keyboardType = KeyboardType.Password,
-                isPassword = true,
-                enabled = !state.isLoading
-            )
+                OddBiteTextField(
+                    value = state.password,
+                    onValueChange = onPasswordChange,
+                    label = stringResource(R.string.login_password),
+                    leadingIcon = R.drawable.ic_lock,
+                    keyboardType = KeyboardType.Password,
+                    isPassword = true,
+                    enabled = !state.isLoading,
+                    errorMessage = state.passwordError?.let { stringResource(it) }
+                )
+            }
 
             state.errorMessage?.let {
                 Text(text = stringResource(it), color = colors.error)

@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -149,7 +148,7 @@ fun LoginScreen(
 
         Spacer(modifier = Modifier.weight(1f))
 
-        Column(verticalArrangement = Arrangement.spacedBy(Variables.space16)) {
+        Column {
             OddBiteTextField(
                 value = state.email,
                 onValueChange = onEmailChange,
@@ -165,7 +164,8 @@ fun LoginScreen(
                 label = stringResource(R.string.login_password),
                 leadingIcon = R.drawable.ic_lock,
                 keyboardType = KeyboardType.Password,
-                isPassword = true
+                isPassword = true,
+                errorMessage = state.errorMessage?.let { stringResource(it) }
             )
 
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start) {
@@ -181,10 +181,6 @@ fun LoginScreen(
                         )
                     )
                 }
-            }
-
-            state.errorMessage?.let {
-                Text(text = stringResource(it), color = MaterialTheme.colorScheme.error)
             }
         }
 
