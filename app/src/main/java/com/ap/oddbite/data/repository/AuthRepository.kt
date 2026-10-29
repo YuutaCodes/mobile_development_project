@@ -22,12 +22,22 @@ class AuthRepository(private val authRemoteDataSource: AuthRemoteDataSource) {
 
     suspend fun login(email: String, password: String): User {
         val uid = authRemoteDataSource.login(email, password)
-        val user = authRemoteDataSource.getUser(uid)
+        return loadProfileOrLogout(uid) ?: throw IllegalStateException("User missing")
+    }
 
-        if (user == null) {
-            authRemoteDataSource.logout()
-            throw IllegalStateException("User missing")
-        }
+    fun logout() {
+        authRemoteDataSource.logout()
+    }
+
+    suspend fun getCurrentUser(): User? {
+        val uid = authRemoteDataSource.getCurrentUid() ?: return null
+        return loadProfileOrLogout(uid)
+    }
+
+    // Logout when the profile is missing, otherwise the user stays signed in to Firebase without a role
+    private suspend fun loadProfileOrLogout(uid: String): User? {
+        val user = authRemoteDataSource.getUser(uid)
+        if (user == null) authRemoteDataSource.logout()
         return user
     }
 }

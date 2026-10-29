@@ -37,7 +37,14 @@ class AuthRemoteDataSource(private val auth: FirebaseAuth, private val db: Fireb
         val name = doc.getString("name") ?: return null
         val email = doc.getString("email") ?: return null
         val role = doc.getString("role")
-            ?.let { stored -> Role.entries.firstOrNull { it.name.equals(stored, ignoreCase = true) } }
+            ?.let { stored ->
+                Role.entries.firstOrNull {
+                    it.name.equals(
+                        stored,
+                        ignoreCase = true
+                    )
+                }
+            }
             ?: return null
         return User(name, email, role)
     }
@@ -51,4 +58,6 @@ class AuthRemoteDataSource(private val auth: FirebaseAuth, private val db: Fireb
             .document(uid)
             .set(data).await()
     }
+
+    fun getCurrentUid(): String? = auth.currentUser?.uid
 }
