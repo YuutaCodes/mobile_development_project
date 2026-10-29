@@ -17,7 +17,7 @@ This design can change overtime to make improvements
 
 - **Never push or commit to `main`.** Every feature gets its own branch, merged via pull request with green CI.
 - Branch names: `feat/<short-name>`, `fix/<short-name>`, `chore/<short-name>`, `docs/<short-name>`.
-- One feature or requirement per branch (e.g. `feat/auth`, `feat/reverse-geocoding`).
+- Preferably one feature or requirement per branch (e.g. `feat/auth`, `feat/reverse-geocoding`).
 - Small, regular, clear commits. Git counts toward the grade and every group member must contribute.
 - No co-author lines in commit messages or merges.
 
